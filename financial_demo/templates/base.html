@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Trust Reporting System{% endblock %} · Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="{% url 'dashboard' %}" class="nav-brand">
+      <span class="brand-icon">◈</span>
+      <span>Trust Reporting System</span>
+      <span class="brand-badge">demo</span>
+    </a>
+    <div class="nav-links">
+      <a href="{% url 'proceso_nuevo' %}" class="btn btn-sm">+ Nuevo proceso</a>
+      <span class="nav-user">{{ user.get_full_name|default:user.username }}</span>
+      <form method="post" action="{% url 'logout' %}" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;">Salir</button>
+      </form>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<main class="main-content">
+  {% if messages %}
+  <div class="messages-wrap">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <span>Financial Reporting Demo · Built with Django + SQLite</span>
+  <span class="footer-sep">·</span>
+  <a href="https://github.com/Say1309/financial-reporting-demo" target="_blank">View on GitHub ↗</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Proceso {{ proceso.fideicomiso.nombre }} {{ proceso.periodo }}{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+  <div>
+    <div class="page-title">{{ proceso.fideicomiso.nombre }}</div>
+    <div class="page-sub">Fideicomiso {{ proceso.fideicomiso.numero }} · Periodo {{ proceso.periodo }} · <span class="badge badge-{{ proceso.estado|lower }}">{{ proceso.get_estado_display }}</span></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    {% if proceso.estado != 'CERRADO' %}<a href="{% url 'captura_datos' proceso.pk %}" class="btn">Capturar datos</a>{% endif %}
+    <a href="{% url 'reporte_html' proceso.pk %}" class="btn">Ver reporte</a>
+    {% if proceso.estado == 'CERRADO' %}<a href="{% url 'reporte_html' proceso.pk %}?print=1" class="btn btn-success" onclick="window.print();return false;">Imprimir</a>{% endif %}
+  </div>
+</div>
+
+<div class="section-lbl">// progreso del proceso</div>
+<div class="card" style="margin-bottom:20px;">
+  <div style="margin-bottom:16px;">
+    <div class="progress-bar" style="height:8px;"><div class="progress-fill" style="width:{{ proceso.porcentaje_avance }}%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace;"><span>Paso {{ proceso.paso_actual }} de 8</span><span>{{ proceso.porcentaje_avance }}% completado</span></div>
+  </div>
+  <div class="steps-row">
+    {% for paso in pasos_info %}
+    <div class="step-item {% if paso.completado %}done{% elif paso.es_actual %}active{% endif %}">
+      <div class="step-circle">{% if paso.completado %}✓{% else %}{{ paso.numero }}{% endif %}</div>
+      <div class="step-label">{{ paso.nombre }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="grid2" style="margin-bottom:20px;">
+  <div class="card">
+    <div class="card-header"><div><div class="card-title">Datos financieros</div><div class="card-sub">Cifras del periodo</div></div><a href="{% url 'captura_datos' proceso.pk %}" class="btn btn-sm">Editar</a></div>
+    {% if datos %}
+    <table style="width:100%">
+      <tr><td style="color:var(--muted2)">Saldo inicial</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--text)">${{ datos.saldo_inicial|floatformat:2 }}</td></tr>
+      <tr><td style="color:var(--muted2)">Aportaciones</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--green)">${{ datos.aportaciones|floatformat:2 }}</td></tr>
+      <tr><td style="color:var(--muted2)">Retiros</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--rose)">-${{ datos.retiros|floatformat:2 }}</td></tr>
+      <tr><td style="color:var(--muted2)">Rendimientos</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--teal)">${{ datos.rendimientos|floatformat:2 }}</td></tr>
+      <tr><td style="color:var(--muted2)">Comisiones</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--rose)">-${{ datos.comisiones|floatformat:2 }}</td></tr>
+      <tr style="border-top:1px solid var(--border2)"><td style="color:var(--text);font-weight:500">Saldo final</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:1.1rem">${{ datos.saldo_final|floatformat:2 }}</td></tr>
+      <tr><td style="color:var(--muted2)">Tasa ref.</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--muted2)">{{ datos.tasa_referencia }}%</td></tr>
+    </table>
+    {% else %}<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center;">Sin datos capturados aún.</div>{% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-title">Checklists</div></div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:13px;">Cuentas</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          {% if checklist_cuentas %}<span class="badge badge-{{ checklist_cuentas.estado|lower }}">{{ checklist_cuentas.get_estado_display }}</span>{% endif %}
+          <a href="{% url 'checklist_cuentas' proceso.pk %}" class="btn btn-sm">Ver</a>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:13px;">Data</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          {% if checklist_data %}<span class="badge badge-{{ checklist_data.estado|lower }}">{{ checklist_data.get_estado_display }}</span>{% endif %}
+          <a href="{% url 'checklist_data' proceso.pk %}" class="btn btn-sm">Ver</a>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+        <span style="font-size:13px;">Expedientes</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          {% if checklist_expedientes %}<span class="badge badge-{{ checklist_expedientes.estado|lower }}">{{ checklist_expedientes.get_estado_display }}</span>{% endif %}
+          <a href="{% url 'checklist_expedientes' proceso.pk %}" class="btn btn-sm">Ver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if proceso.estado != 'CERRADO' %}
+<div class="card" style="margin-bottom:20px;border-color:rgba(232,201,122,0.2)">
+  <div class="card-title" style="margin-bottom:12px;">Avanzar al siguiente paso</div>
+  <div style="font-size:13px;color:var(--muted2);margin-bottom:16px;">Paso actual: <strong style="color:var(--gold)">{{ proceso.paso_actual }} — {{ proceso.paso_nombre }}</strong></div>
+  <form method="post" action="{% url 'avanzar_paso' proceso.pk %}">{% csrf_token %}
+    <div class="form-group"><label class="form-label">Notas del paso (opcional)</label><textarea name="notas" class="form-control" rows="2" placeholder="Observaciones, incidencias..."></textarea></div>
+    <button type="submit" class="btn btn-primary">{% if proceso.paso_actual == 8 %}Cerrar proceso ✓{% else %}Completar paso {{ proceso.paso_actual }} →{% endif %}</button>
+  </form>
+</div>
+{% endif %}
+
+{% if logs %}
+<div class="section-lbl">// historial de pasos</div>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>Paso</th><th>Completado por</th><th>Fecha</th><th>Notas</th></tr></thead>
+  <tbody>{% for log in logs %}<tr>
+    <td style="font-family:'JetBrains Mono',monospace;color:var(--teal)">{{ log.paso }} · {{ log.get_paso_display }}</td>
+    <td style="color:var(--text)">{{ log.completado_por.get_full_name|default:log.completado_por.username }}</td>
+    <td style="font-size:12px;color:var(--muted)">{{ log.fecha|date:"d/m/Y H:i" }}</td>
+    <td style="font-size:12px;color:var(--muted2)">{{ log.notas|default:"—" }}</td>
+  </tr>{% endfor %}</tbody>
+</table></div></div>
+{% endif %}
+{% endblock %}

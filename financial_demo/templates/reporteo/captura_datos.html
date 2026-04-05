@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Captura de datos{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Captura de datos</div>
+  <div class="page-sub">{{ proceso.fideicomiso.nombre }} · {{ proceso.periodo }}</div>
+</div>
+<div style="max-width:560px;">
+  <div class="card">
+    <form method="post">{% csrf_token %}
+      <div class="grid2">
+        <div class="form-group"><label class="form-label">Saldo inicial ($)</label><input type="number" name="saldo_inicial" class="form-control" step="0.01" value="{{ datos.saldo_inicial|default:'0' }}"></div>
+        <div class="form-group"><label class="form-label">Tasa de referencia (%)</label><input type="number" name="tasa_referencia" class="form-control" step="0.0001" value="{{ datos.tasa_referencia|default:'0' }}"></div>
+        <div class="form-group"><label class="form-label">Aportaciones ($)</label><input type="number" name="aportaciones" class="form-control" step="0.01" value="{{ datos.aportaciones|default:'0' }}"></div>
+        <div class="form-group"><label class="form-label">Retiros ($)</label><input type="number" name="retiros" class="form-control" step="0.01" value="{{ datos.retiros|default:'0' }}"></div>
+        <div class="form-group"><label class="form-label">Rendimientos ($)</label><input type="number" name="rendimientos" class="form-control" step="0.01" value="{{ datos.rendimientos|default:'0' }}"></div>
+        <div class="form-group"><label class="form-label">Comisiones ($)</label><input type="number" name="comisiones" class="form-control" step="0.01" value="{{ datos.comisiones|default:'0' }}"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button type="submit" class="btn btn-primary">Guardar datos</button>
+        <a href="{% url 'proceso_detalle' proceso.pk %}" class="btn">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

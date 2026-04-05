@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Checklist {{ tipo }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div class="page-title">Checklist {{ tipo }}</div>
+  <div class="page-sub">{{ proceso.fideicomiso.nombre }} · {{ proceso.periodo }} · <span class="badge badge-{{ checklist.estado|lower }}">{{ checklist.get_estado_display }}</span></div>
+</div>
+<div style="max-width:560px;">
+  <div class="card">
+    <form method="post">{% csrf_token %}
+      {% if tipo == 'Cuentas' %}
+      {% include "checklist/_items.html" with items=campo_list|default:"" %}
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="conciliacion_bancaria" {% if checklist.conciliacion_bancaria %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.conciliacion_bancaria %}checked{% endif %}">{% if checklist.conciliacion_bancaria %}✓{% endif %}</div><span class="check-text">Conciliación bancaria completada</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="saldos_validados" {% if checklist.saldos_validados %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.saldos_validados %}checked{% endif %}">{% if checklist.saldos_validados %}✓{% endif %}</div><span class="check-text">Saldos validados contra estado de cuenta</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="movimientos_revisados" {% if checklist.movimientos_revisados %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.movimientos_revisados %}checked{% endif %}">{% if checklist.movimientos_revisados %}✓{% endif %}</div><span class="check-text">Movimientos del periodo revisados</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="diferencias_justificadas" {% if checklist.diferencias_justificadas %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.diferencias_justificadas %}checked{% endif %}">{% if checklist.diferencias_justificadas %}✓{% endif %}</div><span class="check-text">Diferencias justificadas (si aplica)</span></label></div>
+      {% elif tipo == 'Data' %}
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="datos_fuente_cargados" {% if checklist.datos_fuente_cargados %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.datos_fuente_cargados %}checked{% endif %}">{% if checklist.datos_fuente_cargados %}✓{% endif %}</div><span class="check-text">Datos fuente cargados al sistema</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="formatos_validados" {% if checklist.formatos_validados %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.formatos_validados %}checked{% endif %}">{% if checklist.formatos_validados %}✓{% endif %}</div><span class="check-text">Formatos y estructuras validados</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="campos_obligatorios" {% if checklist.campos_obligatorios %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.campos_obligatorios %}checked{% endif %}">{% if checklist.campos_obligatorios %}✓{% endif %}</div><span class="check-text">Campos obligatorios completos</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="integridad_verificada" {% if checklist.integridad_verificada %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.integridad_verificada %}checked{% endif %}">{% if checklist.integridad_verificada %}✓{% endif %}</div><span class="check-text">Integridad de datos verificada</span></label></div>
+      {% elif tipo == 'Expedientes' %}
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="documentos_completos" {% if checklist.documentos_completos %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.documentos_completos %}checked{% endif %}">{% if checklist.documentos_completos %}✓{% endif %}</div><span class="check-text">Documentación del expediente completa</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="firmas_vigentes" {% if checklist.firmas_vigentes %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.firmas_vigentes %}checked{% endif %}">{% if checklist.firmas_vigentes %}✓{% endif %}</div><span class="check-text">Firmas y autorizaciones vigentes</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="poderes_validados" {% if checklist.poderes_validados %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.poderes_validados %}checked{% endif %}">{% if checklist.poderes_validados %}✓{% endif %}</div><span class="check-text">Poderes notariales validados</span></label></div>
+      <div class="check-item"><label style="display:flex;gap:10px;cursor:pointer;width:100%;"><input type="checkbox" name="dictamen_anexo" {% if checklist.dictamen_anexo %}checked{% endif %} style="display:none"><div class="check-box {% if checklist.dictamen_anexo %}checked{% endif %}">{% if checklist.dictamen_anexo %}✓{% endif %}</div><span class="check-text">Dictamen legal anexo</span></label></div>
+      {% endif %}
+
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Observaciones</label>
+        <textarea name="observaciones" class="form-control" rows="3" placeholder="Notas adicionales...">{{ checklist.observaciones }}</textarea>
+      </div>
+
+      {% if user.rol.es_ejecutivo_mesa %}
+      <div style="margin-bottom:16px;padding:12px;background:rgba(168,122,232,0.06);border:1px solid rgba(168,122,232,0.2);border-radius:8px;">
+        <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--lav);letter-spacing:1px;margin-bottom:10px;">// ACCIÓN DE EJECUTIVO MESA</div>
+        <div style="display:flex;gap:8px;">
+          <button type="submit" name="accion" value="aprobar" class="btn btn-success">Aprobar ✓</button>
+          <button type="submit" name="accion" value="rechazar" class="btn btn-danger">Rechazar ✗</button>
+        </div>
+      </div>
+      {% endif %}
+
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary">Guardar checklist</button>
+        <a href="{% url 'proceso_detalle' proceso.pk %}" class="btn">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+document.querySelectorAll('.check-item label').forEach(label => {
+  label.addEventListener('click', function() {
+    const cb = this.querySelector('input[type=checkbox]');
+    const box = this.querySelector('.check-box');
+    cb.checked = !cb.checked;
+    box.classList.toggle('checked', cb.checked);
+    box.textContent = cb.checked ? '✓' : '';
+  });
+});
+</script>
+{% endblock %}

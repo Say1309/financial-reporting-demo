@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar sesión · Trust Reporting System Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% load static %}<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<style>
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-card{width:100%;max-width:380px;}
+.login-header{text-align:center;margin-bottom:32px;}
+.login-icon{font-size:2rem;color:var(--gold);margin-bottom:10px;}
+.login-title{font-size:20px;font-weight:500;margin-bottom:4px;}
+.login-sub{font-size:12px;color:var(--muted2);}
+.demo-creds{background:rgba(122,232,208,0.06);border:1px solid rgba(122,232,208,0.2);border-radius:10px;padding:12px 14px;margin-top:20px;font-size:12px;color:var(--muted2);line-height:1.8;}
+.errorlist{list-style:none;background:rgba(232,122,154,0.1);border:1px solid rgba(232,122,154,0.25);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--rose);}
+</style>
+</head>
+<body>
+<div class="login-wrap"><div class="login-card">
+  <div class="login-header">
+    <div class="login-icon">◈</div>
+    <div class="login-title">Trust Reporting System</div>
+    <div class="login-sub">Financial Reporting Demo · by <a href="https://github.com/Say1309">Say1309</a></div>
+  </div>
+  <div class="card">
+    {% if form.errors %}<ul class="errorlist"><li>Usuario o contraseña incorrectos.</li></ul>{% endif %}
+    <form method="post">{% csrf_token %}
+      <div class="form-group"><label class="form-label">Usuario</label><input type="text" name="username" class="form-control" autofocus></div>
+      <div class="form-group"><label class="form-label">Contraseña</label><input type="password" name="password" class="form-control"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px;">Entrar →</button>
+    </form>
+  </div>
+  <div class="demo-creds">
+    <div style="margin-bottom:4px;color:var(--teal);font-size:11px;letter-spacing:1px;font-family:'JetBrains Mono',monospace;">// CREDENCIALES DEMO</div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;color:var(--teal)">capturista</strong> / demo123</div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;color:var(--gold)">ejecutivo</strong> / demo123</div>
+    <div><strong style="font-family:'JetBrains Mono',monospace;color:var(--lav)">supervisor</strong> / demo123</div>
+  </div>
+</div></div>
+</body></html>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Reporte {{ proceso.fideicomiso.nombre }} {{ proceso.periodo }}{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;" class="no-print">
+    <div class="page-title">Reporte de proceso</div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="window.print()" class="btn btn-success">Imprimir / PDF</button>
+      <a href="{% url 'proceso_detalle' proceso.pk %}" class="btn">← Volver</a>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px;padding:28px 32px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:20px;">
+      <div>
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;color:var(--gold);margin-bottom:6px;">REPORTE DE FIDEICOMISO</div>
+        <div style="font-size:20px;font-weight:500;">{{ proceso.fideicomiso.nombre }}</div>
+        <div style="font-size:13px;color:var(--muted2);">Fiduciaria: {{ proceso.fideicomiso.fiduciaria }}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;color:var(--gold)">{{ proceso.periodo }}</div>
+        <div style="font-size:12px;color:var(--muted)">Fideicomiso #{{ proceso.fideicomiso.numero }}</div>
+        <span class="badge badge-{{ proceso.estado|lower }}" style="margin-top:4px;">{{ proceso.get_estado_display }}</span>
+      </div>
+    </div>
+
+    {% if datos %}
+    <div style="margin-bottom:24px;">
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;color:var(--muted);margin-bottom:12px;">MOVIMIENTOS DEL PERIODO</div>
+      <table style="width:100%">
+        <tr><td style="padding:8px 0;color:var(--muted2);border-bottom:1px solid var(--border)">Saldo inicial</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;border-bottom:1px solid var(--border)">$&nbsp;{{ datos.saldo_inicial|floatformat:2 }}</td></tr>
+        <tr><td style="padding:8px 0;color:var(--green);border-bottom:1px solid var(--border)">+ Aportaciones</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--green);border-bottom:1px solid var(--border)">$&nbsp;{{ datos.aportaciones|floatformat:2 }}</td></tr>
+        <tr><td style="padding:8px 0;color:var(--rose);border-bottom:1px solid var(--border)">− Retiros</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--rose);border-bottom:1px solid var(--border)">$&nbsp;{{ datos.retiros|floatformat:2 }}</td></tr>
+        <tr><td style="padding:8px 0;color:var(--teal);border-bottom:1px solid var(--border)">+ Rendimientos</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--teal);border-bottom:1px solid var(--border)">$&nbsp;{{ datos.rendimientos|floatformat:2 }}</td></tr>
+        <tr><td style="padding:8px 0;color:var(--rose);border-bottom:1px solid var(--border2)">− Comisiones</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;color:var(--rose);border-bottom:1px solid var(--border2)">$&nbsp;{{ datos.comisiones|floatformat:2 }}</td></tr>
+        <tr><td style="padding:12px 0;font-weight:600;font-size:15px;">Saldo final</td><td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--gold)">$&nbsp;{{ datos.saldo_final|floatformat:2 }}</td></tr>
+      </table>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted)">Tasa de referencia aplicada: <span style="font-family:'JetBrains Mono',monospace;color:var(--muted2)">{{ datos.tasa_referencia }}%</span></div>
+    </div>
+    {% endif %}
+
+    <div>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;color:var(--muted);margin-bottom:12px;">HISTORIAL DE PROCESO</div>
+      {% for log in proceso.logs.all %}
+      <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;">
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--teal);width:24px;flex-shrink:0">{{ log.paso }}</span>
+        <span style="color:var(--muted2);flex:1">{{ log.get_paso_display }}</span>
+        <span style="color:var(--muted)">{{ log.completado_por.get_full_name|default:log.completado_por.username }}</span>
+        <span style="color:var(--muted)">{{ log.fecha|date:"d/m/Y" }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--muted);">
+      <span>Generado: {{ proceso.fecha_creacion|date:"d/m/Y H:i" }}</span>
+      <span>Financial Reporting Demo · github.com/Say1309</span>
+    </div>
+  </div>
+</div>
+{% endblock %}
